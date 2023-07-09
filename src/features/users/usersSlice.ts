@@ -64,3 +64,8 @@ export const selectAllUsers = ({ users }: { users: TUsersIntialState }) => {
 
 export const getUsersStatus = ({ users }: { users: TUsersIntialState }) =>
   users.status;
+
+export const selectUserById = (
+  { users }: { users: TUsersIntialState },
+  userId: number
+) => users.usersData.users.find((user) => user.id === userId);
