@@ -12,7 +12,7 @@ export type TUser = {
 export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
   try {
     const response = await clientUsers.get(
-      `https://dummyjson.com/users?limit=100`
+      `https://dummyjson.com/users?limit=5`
     );
 
     if (response && response.data) {

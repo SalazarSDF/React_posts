@@ -1,0 +1,98 @@
+.post {
+  background-color: #273c40;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  grid-template-rows: 1fr 2fr minmax(1fr, max-content) 1fr;
+}
+
+.post__title {
+  font-size: 1.5rem;
+  margin-bottom: 0.7rem;
+  grid-column: 2/3;
+}
+
+.post__inpit-title {
+  grid-column: 2/3;
+}
+.post__inpit-username {
+  grid-column: 2/3;
+}
+.post__inpit-textarea {
+  grid-column: 2/3;
+}
+
+.post p {
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+
+  grid-column: 2/3;
+}
+
+.post__buttons {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  grid-column: 2/3;
+}
+
+.post__buttons button {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+  padding: 0.3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+}
+
+.post__buttons button span {
+  margin-right: 0.2rem;
+}
+
+.comment__button.active {
+  font-weight: bold;
+}
+
+.favorite__button.active {
+  color: #ff9800;
+}
+
+.post__checkbox {
+  grid-column: 1;
+  margin-top: 1rem;
+  grid-row: 1/-1;
+  justify-self: center;
+  align-self: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  cursor: pointer;
+}
+
+.selected {
+  background-color: rgb(208 195 74 / 42%);
+}
+
+.selected-buttons {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.selected-buttons button {
+  margin-right: 16px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.comments__section {
+  margin-top: 16px;
+  padding: 8px;
+  background-color: #e8e8e8;
+}

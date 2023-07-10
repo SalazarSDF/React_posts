@@ -13,7 +13,7 @@ export type TPost = {
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   try {
-    const response = await clientPosts.get(`https://dummyjson.com/posts?limit=100`);
+    const response = await clientPosts.get(`https://dummyjson.com/posts?limit=5`);
 
     if (response && response.data) {
       const postsData: TData = response.data;
