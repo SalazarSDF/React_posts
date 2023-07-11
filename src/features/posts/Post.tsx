@@ -3,6 +3,8 @@ import { TPost } from "./postsSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { selectUserById } from "../users/usersSlice";
+import { fetchPostComments } from "./postsSlice";
+import PostComments from "./PostComments";
 import "./Post.css";
 
 type TPostState = {
@@ -58,7 +60,7 @@ const Post = ({ post }: { post: TPost }) => {
 
   const [postValue, dispatch] = useReducer(changePostValue, {
     postBody: post.body,
-    postUser: user ? user.firstName : "secret ninja",
+    postUser: user ? `${user.firstName} ${user.lastName}` : "secret ninja",
     postTitle: post.title,
   });
 
@@ -112,7 +114,6 @@ const Post = ({ post }: { post: TPost }) => {
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    console.log(event.target, "its event target need name and value");
     if (!event || !event.target) return;
     const { name, value }: { name: string; value: string } = event.target;
 
@@ -169,7 +170,14 @@ const Post = ({ post }: { post: TPost }) => {
           className="post__inpit-username"
         />
       ) : (
-        <p>{postValue.postUser}</p>
+        <div className="post__user">
+          <img
+            className="post__user-image"
+            src={user?.image}
+            alt="user photo"
+          />
+          <p className="post__user-name">{postValue.postUser}</p>
+        </div>
       )}
       {editing ? (
         <textarea
@@ -181,7 +189,7 @@ const Post = ({ post }: { post: TPost }) => {
           className="post__inpit-textarea"
         />
       ) : (
-        <p>{postValue.postBody}</p>
+        <p className="post__text">{postValue.postBody}</p>
       )}
 
       <div className="post__buttons">
@@ -226,7 +234,7 @@ const Post = ({ post }: { post: TPost }) => {
 
       {showComments && (
         <div className="comments__section">
-          {/* Отображение комментариев */}
+          <PostComments postId={post.id} />
         </div>
       )}
 

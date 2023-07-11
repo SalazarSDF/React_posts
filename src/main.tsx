@@ -7,9 +7,9 @@ import "./index.css";
 import { fetchPosts } from "./features/posts/postsSlice.ts";
 import { fetchUsers } from "./features/users/usersSlice.ts";
 
-function start() {
+async function start() {
+  await store.dispatch(fetchUsers());
   void store.dispatch(fetchPosts());
-  void store.dispatch(fetchUsers());
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <Provider store={store}>
@@ -19,4 +19,4 @@ function start() {
   );
 }
 
-start();
+void start();

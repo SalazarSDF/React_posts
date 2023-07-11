@@ -12,7 +12,7 @@ export type TUser = {
 export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
   try {
     const response = await clientUsers.get(
-      `https://dummyjson.com/users?limit=5`
+      `https://dummyjson.com/users?limit=100`
     );
 
     if (response && response.data) {
@@ -69,3 +69,8 @@ export const selectUserById = (
   { users }: { users: TUsersIntialState },
   userId: number
 ) => users.usersData.users.find((user) => user.id === userId);
+
+export const selectUsersByIds = (
+  { users }: { users: TUsersIntialState },
+  userIds: number[]
+) => userIds.map((userId) => selectUserById({ users }, userId));
