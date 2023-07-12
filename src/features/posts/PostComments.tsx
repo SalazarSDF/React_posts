@@ -1,63 +1,58 @@
 import { useSelector } from "react-redux";
-import { getPostCommentsStatus, selectOnePost } from "./postsSlice";
+import { getPostCommentsStatus } from "./postsSlice";
 import { Spinner } from "../../components/Spiner";
-import { fetchPostComments } from "./postsSlice";
-import { RootState, useAppDispatch } from "../../store";
-import { useEffect } from "react";
+import { RootState } from "../../store";
 import { selectUsersByIds } from "../users/usersSlice";
+import { TPost } from "./postsSlice";
+import "./PostComments.css";
 
-const PostComments = ({ postId }: { postId: number }) => {
+const PostComments = ({ post }: { post: TPost }) => {
   const postCommentsStatus = useSelector(getPostCommentsStatus);
-  const dispatch = useAppDispatch();
-  const post = useSelector((state: RootState) => selectOnePost(state, postId));
-  useEffect(() => {
-    if (postCommentsStatus !== "loading") {
-      if (!post) return;
-      const jopa = post.comments;
-      if (!jopa) void dispatch(fetchPostComments(postId));
-    }
-  }, [postCommentsStatus, dispatch, postId, post]);
-
+  const isShowLoading = postCommentsStatus === "loading" && !post.comments;
   const usersWitchLeaveComments = useSelector((state: RootState) => {
-    if (!post || !post.comments) return;
+    if (!post.comments) return;
     return selectUsersByIds(
       state,
       post.comments.map((comment) => comment.user.id)
     );
   });
 
-  if (!post) return <p>No post</p>;
+  if (!post.comments && postCommentsStatus !== "loading")
+    return <p>No comments..</p>;
 
   const commentsList = () => {
-    return post.comments?.map((comment, id) => {
+    if (!post.comments)
+      return (
+        <li>
+          <p>No Comments..</p>
+        </li>
+      );
+    return post.comments.map((comment, id) => {
       const user = usersWitchLeaveComments
         ? usersWitchLeaveComments[id]
         : false;
-      let userDiv;
-      if (user) {
-        userDiv = (
-          <div className="post__user">
-            <img className="post__user-image" src={user.image} alt="" />
-            <p className="post__user-name">{comment.user.username}</p>
-            <p>email: {user.email}</p>
-          </div>
-        );
-      }
       return (
-        <li>
+        <li className="comments-list__item" key={comment.id}>
+          {user ? (
+            <div className="comments-list__user">
+              <img className="comments-list__user-image" src={user.image} alt="" />
+              <p className="comments-list__user-name">{comment.user.username}</p>
+              <p>{user.email}</p>
+            </div>
+          ) : (
+            <p>Unknown user...</p>
+          )}
           <p>{comment.body}</p>
-          {user && userDiv}
         </li>
       );
     });
   };
-
-  console.log(post.comments);
-  console.log(usersWitchLeaveComments);
-  return postCommentsStatus === "loading" ? (
+  console.log(post.comments, 'post comments');
+  console.log(usersWitchLeaveComments, 'users withc leab comments');
+  return isShowLoading ? (
     <Spinner />
   ) : (
-    <ul>{commentsList()}</ul>
+    <ul className="comments-list">{commentsList()}</ul>
   );
 };
 

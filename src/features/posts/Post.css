@@ -89,7 +89,7 @@
 }
 
 .selected {
-  background-color: rgb(208 195 74 / 42%);
+  background-color: rgb(137 216 166 / 33%);
 }
 
 .selected-buttons {
@@ -110,6 +110,4 @@
 .comments__section {
   grid-column: 2/3;
   margin-top: 1rem;
-  padding: 8px;
-  background-color: #e8e8e8;
 }

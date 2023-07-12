@@ -1,7 +1,7 @@
 import { useState, useReducer } from "react";
 import { TPost } from "./postsSlice";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store";
+import { RootState, useAppDispatch } from "../../store";
 import { selectUserById } from "../users/usersSlice";
 import { fetchPostComments } from "./postsSlice";
 import PostComments from "./PostComments";
@@ -54,11 +54,12 @@ const Post = ({ post }: { post: TPost }) => {
   const [editing, setEditing] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [selected, setSelected] = useState(false);
+  const dispatch = useAppDispatch();
   const user = useSelector((state: RootState) =>
     selectUserById(state, post.userId)
   );
 
-  const [postValue, dispatch] = useReducer(changePostValue, {
+  const [postValue, dispatchChangePostValue] = useReducer(changePostValue, {
     postBody: post.body,
     postUser: user ? `${user.firstName} ${user.lastName}` : "secret ninja",
     postTitle: post.title,
@@ -66,6 +67,9 @@ const Post = ({ post }: { post: TPost }) => {
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
+    if (!post.comments) {
+      void dispatch(fetchPostComments(post.id));
+    }
   };
 
   const handleToggleEditing = () => {
@@ -120,14 +124,14 @@ const Post = ({ post }: { post: TPost }) => {
     // Обновить соответствующее состояние
     switch (name) {
       case "postTitle": {
-        dispatch({
+        dispatchChangePostValue({
           type: TPostActionKind.change_post_title,
           payload: { postTitle: value },
         });
         break;
       }
       case "postBody": {
-        dispatch({
+        dispatchChangePostValue({
           type: TPostActionKind.change_post_body,
           payload: { postBody: value },
         });
@@ -135,7 +139,7 @@ const Post = ({ post }: { post: TPost }) => {
         break;
       }
       case "postUserName": {
-        dispatch({
+        dispatchChangePostValue({
           type: TPostActionKind.change_post_user,
           payload: { postUser: value },
         });
@@ -146,6 +150,7 @@ const Post = ({ post }: { post: TPost }) => {
 
   return (
     <div className={`post ${selected ? "selected" : ""}`}>
+      <p>{post.id}</p>
       {editing ? (
         <input
           type="text"
@@ -153,7 +158,6 @@ const Post = ({ post }: { post: TPost }) => {
           value={postValue.postTitle}
           onChange={(e) => handleInputChange(e)}
           placeholder="Enter a value"
-          style={{ border: "2px solid blue" }}
           className="post__inpit-title"
         />
       ) : (
@@ -166,7 +170,6 @@ const Post = ({ post }: { post: TPost }) => {
           value={postValue.postUser}
           onChange={handleInputChange}
           placeholder="Enter a value"
-          style={{ border: "2px solid blue" }}
           className="post__inpit-username"
         />
       ) : (
@@ -185,7 +188,6 @@ const Post = ({ post }: { post: TPost }) => {
           value={postValue.postBody}
           onChange={handleInputChange}
           placeholder="Enter a value"
-          style={{ border: "2px solid blue" }}
           className="post__inpit-textarea"
         />
       ) : (
@@ -234,7 +236,7 @@ const Post = ({ post }: { post: TPost }) => {
 
       {showComments && (
         <div className="comments__section">
-          <PostComments postId={post.id} />
+          <PostComments post={post} />
         </div>
       )}
 

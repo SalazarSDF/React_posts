@@ -77,7 +77,6 @@ const postsSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
-        console.log(action, "action");
         state.status = "succeeded";
         if (action.payload) {
           state.postsData = action.payload;
@@ -92,6 +91,7 @@ const postsSlice = createSlice({
 
       .addCase(fetchPostComments.fulfilled, (state, action) => {
         state.commentsStatus = "succeeded";
+        if(action.payload.comments.length === 0) return 
         const post = state.postsData.posts.find(
           (post) => post.id === action.payload.comments[0].postId
         );
