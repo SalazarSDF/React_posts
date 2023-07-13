@@ -88,6 +88,10 @@
   cursor: pointer;
 }
 
+.favorite {
+  border: 1px solid orange;
+}
+
 .selected {
   background-color: rgb(137 216 166 / 33%);
 }

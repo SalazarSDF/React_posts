@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { clientPosts } from "../../api/clientPosts";
 import { TData } from "../../api/clientPosts";
 import {
@@ -15,6 +15,8 @@ export type TPost = {
   tags: [];
   reactions: number;
   comments?: TComments[];
+  selected?: boolean;
+  favorite?: boolean;
 };
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
@@ -70,7 +72,53 @@ const initialState: TPostsIntialState = {
 const postsSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
+  reducers: {
+    selectPostHandler(state, action: PayloadAction<{ postId: number }>) {
+      const { postId } = action.payload;
+      const existingPost = state.postsData.posts.find(
+        (post) => post.id === postId
+      );
+      if (existingPost) {
+        const newExistingPostValue =
+          existingPost.selected === undefined ? true : !existingPost.selected;
+        existingPost.selected = newExistingPostValue;
+      }
+    },
+    favoritePostHandler(state, action: PayloadAction<{ postId: number }>) {
+      const { postId } = action.payload;
+      const existingPost = state.postsData.posts.find(
+        (post) => post.id === postId
+      );
+      if (existingPost) {
+        const newExistingPostValue =
+          existingPost.favorite === undefined ? true : !existingPost.favorite;
+        existingPost.favorite = newExistingPostValue;
+      }
+    },
+    deleteSelectedPosts(state) {
+      const postsIdsToDelete = state.postsData.posts.map((post) => {
+        if (post.selected === true) {
+          return post.id;
+        }
+      });
+      state.postsData.posts = state.postsData.posts.filter(
+        (post) => !postsIdsToDelete.includes(post.id)
+      );
+    },
+
+    setFavoriteSelectedPosts(state) {
+      const postsIdsToFavorite = state.postsData.posts.map((post) => {
+        if (post.selected === true) {
+          return post.id;
+        }
+      });
+      state.postsData.posts = state.postsData.posts.map((post) => {
+        return postsIdsToFavorite.includes(post.id)
+          ? { ...post, favorite: true, selected: false }
+          : post;
+      });
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.pending, (state, _) => {
@@ -91,7 +139,7 @@ const postsSlice = createSlice({
 
       .addCase(fetchPostComments.fulfilled, (state, action) => {
         state.commentsStatus = "succeeded";
-        if(action.payload.comments.length === 0) return 
+        if (action.payload.comments.length === 0) return;
         const post = state.postsData.posts.find(
           (post) => post.id === action.payload.comments[0].postId
         );
@@ -104,15 +152,20 @@ const postsSlice = createSlice({
 
 export default postsSlice;
 
-export const selectAllPosts = ({ posts }: { posts: TPostsIntialState }) => {
+export const {
+  selectPostHandler,
+  favoritePostHandler,
+  deleteSelectedPosts,
+  setFavoriteSelectedPosts,
+} = postsSlice.actions;
+
+export const getAllPosts = ({ posts }: { posts: TPostsIntialState }) => {
   return posts.postsData.posts;
 };
 
-export const selectOnePost = (
-  { posts }: { posts: TPostsIntialState },
-  postId: number
-) =>  posts.postsData.posts.find((post) => post.id === postId);
-
+export const checkOnSelect = ({ posts }: { posts: TPostsIntialState }) => {
+  return posts.postsData.posts.some((post) => post.selected === true);
+};
 
 export const getPostsStatus = ({ posts }: { posts: TPostsIntialState }) =>
   posts.status;

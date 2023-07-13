@@ -6,6 +6,7 @@ import { selectUserById } from "../users/usersSlice";
 import { fetchPostComments } from "./postsSlice";
 import PostComments from "./PostComments";
 import "./Post.css";
+import { selectPostHandler, favoritePostHandler } from "./postsSlice";
 
 type TPostState = {
   postBody?: string;
@@ -52,8 +53,6 @@ function changePostValue(state: TPostState, action: TPostAction) {
 const Post = ({ post }: { post: TPost }) => {
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [favorite, setFavorite] = useState(false);
-  const [selected, setSelected] = useState(false);
   const dispatch = useAppDispatch();
   const user = useSelector((state: RootState) =>
     selectUserById(state, post.userId)
@@ -87,30 +86,11 @@ const Post = ({ post }: { post: TPost }) => {
   };
 
   const handleToggleFavorite = () => {
-    setFavorite(!favorite);
+    dispatch(favoritePostHandler({ postId: post.id }));
   };
 
   const handleToggleSelect = () => {
-    setSelected(!selected);
-  };
-
-  const handleDeleteSelected = () => {
-    // Показать всплывающее окно с подтверждением удаления выбранных постов
-    const confirmed = window.confirm(
-      "Вы уверены, что хотите удалить выбранные посты?"
-    );
-    if (confirmed) {
-      // Удалить выбранные посты
-    }
-  };
-
-  const handleAddToFavorites = () => {
-    if (favorite) {
-      // Удалить из избранного
-    } else {
-      // Добавить в избранное
-    }
-    handleToggleFavorite();
+    dispatch(selectPostHandler({ postId: post.id }));
   };
 
   const handleInputChange = (
@@ -149,7 +129,11 @@ const Post = ({ post }: { post: TPost }) => {
   };
 
   return (
-    <div className={`post ${selected ? "selected" : ""}`}>
+    <div
+      className={`post ${post.selected === true ? "selected" : ""} ${
+        post.favorite === true ? "favorite" : ""
+      }`}
+    >
       <p>{post.id}</p>
       {editing ? (
         <input
@@ -217,20 +201,23 @@ const Post = ({ post }: { post: TPost }) => {
           Удалить
         </button>
         <button
-          className={`favorite__button ${favorite ? "active" : ""}`}
-          onClick={handleAddToFavorites}
+          className={`favorite__button ${
+            post.favorite === true ? "active" : ""
+          }`}
+          onClick={handleToggleFavorite}
         >
           <span role="img" aria-label="В избранное">
             ⭐
           </span>
-          {favorite ? "Из избранного" : "В избранное"}
+          {post.favorite === true ? "Из избранного" : "В избранное"}
         </button>
       </div>
 
       <input
+        id={`${post.id}`}
         type="checkbox"
         className="post__checkbox"
-        checked={selected}
+        checked={post.selected ? true : false}
         onChange={handleToggleSelect}
       />
 
@@ -239,23 +226,6 @@ const Post = ({ post }: { post: TPost }) => {
           <PostComments post={post} />
         </div>
       )}
-
-      {/* {selected && ( */}
-      {/*   <div className="selected-buttons"> */}
-      {/*     <button */}
-      {/*       className="delete-selected-button" */}
-      {/*       onClick={handleDeleteSelected} */}
-      {/*     > */}
-      {/*       Удалить выбранные */}
-      {/*     </button> */}
-      {/*     <button */}
-      {/*       className="add-to-favorites-selected-button" */}
-      {/*       onClick={handleToggleFavorite} */}
-      {/*     > */}
-      {/*       {favorite ? "Удалить из избранного" : "Добавить в избранное"} */}
-      {/*     </button> */}
-      {/*   </div> */}
-      {/* )} */}
     </div>
   );
 };
