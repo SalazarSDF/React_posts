@@ -1,0 +1,22 @@
+.custom-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #3f51b5;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.custom-button.reverse {
+  transform: rotate(180deg);
+}
+
+.custom-button:focus,
+.custom-button:hover {
+  background-color: #283593;
+  outline: none;
+}

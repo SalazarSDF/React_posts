@@ -9,7 +9,7 @@ import { fetchUsers } from "./features/users/usersSlice.ts";
 
 async function start() {
   await store.dispatch(fetchUsers());
-  void store.dispatch(fetchPosts());
+  void store.dispatch(fetchPosts("https://dummyjson.com/posts?limit=100"));
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <Provider store={store}>

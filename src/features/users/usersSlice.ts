@@ -58,8 +58,8 @@ const usersSlice = createSlice({
 
 export default usersSlice;
 
-export const selectAllUsers = ({ users }: { users: TUsersIntialState }) => {
-  return users;
+export const getAllUsers = ({ users }: { users: TUsersIntialState }) => {
+  return users.usersData.users;
 };
 
 export const getUsersStatus = ({ users }: { users: TUsersIntialState }) =>

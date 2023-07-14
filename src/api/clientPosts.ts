@@ -1,18 +1,11 @@
-import { TPost } from "../features/posts/postsSlice";
+import { TPostData } from "../features/posts/postsSlice";
 interface ClientConfig extends RequestInit {
   headers?: { [key: string]: string };
 }
 
-export type TData = {
-  posts: TPost[];
-  total: number;
-  skip: number;
-  limit: number;
-};
-
 interface ResultObject {
   status: number;
-  data: TData;
+  data: TPostData;
   headers: Headers;
   url: string;
 }
@@ -38,10 +31,10 @@ export async function clientPosts(
     config.body = JSON.stringify(body);
   }
 
-  let data: TData | undefined;
+  let data: TPostData | undefined;
   try {
     const response = await window.fetch(endpoint, config);
-    data = (await response.json()) as TData;
+    data = (await response.json()) as TPostData;
     if (response.ok) {
       // Return a result object similar to Axios
       return {

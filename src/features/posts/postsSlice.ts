@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { clientPosts } from "../../api/clientPosts";
-import { TData } from "../../api/clientPosts";
 import {
   clientPostComments,
   TComments,
@@ -19,22 +18,44 @@ export type TPost = {
   favorite?: boolean;
 };
 
-export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  try {
-    const response = await clientPosts.get(
-      `https://dummyjson.com/posts?limit=100`
-    );
+export type TPostData = {
+  posts: TPost[];
+  total: number;
+  skip: number;
+  limit: number;
+  filterOptions?: {
+    filterByPostName?: string;
+    filterByUserName?: number;
+    filterByFavorites?: boolean;
+  };
+  sortOption?:
+    | "idAsc"
+    | "idDesc"
+    | "titleAsc"
+    | "titleDesc"
+    | "userAsc"
+    | "userDesc"
+    | "FavFirst"
+    | "FavLast";
+};
 
-    if (response && response.data) {
-      const postsData: TData = response.data;
-      return { ...postsData };
+export const fetchPosts = createAsyncThunk(
+  "posts/fetchPosts",
+  async (url: string) => {
+    try {
+      const response = await clientPosts.get(url);
+
+      if (response && response.data) {
+        const postsData: TPostData = response.data;
+        return { ...postsData };
+      }
+      throw new Error("Invalid response or data");
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-    throw new Error("Invalid response or data");
-  } catch (error) {
-    console.error(error);
-    throw error;
   }
-});
+);
 
 export const fetchPostComments = createAsyncThunk(
   "posts/fetchPostComments",
@@ -59,7 +80,7 @@ export const fetchPostComments = createAsyncThunk(
 type TPostsIntialState = {
   status: "idle" | "loading" | "succeeded" | "failed";
   commentsStatus: "idle" | "loading" | "succeeded" | "failed";
-  postsData: TData;
+  postsData: TPostData;
   error: null;
 };
 const initialState: TPostsIntialState = {
@@ -118,6 +139,39 @@ const postsSlice = createSlice({
           : post;
       });
     },
+    changeFilterOption(
+      state,
+      action: PayloadAction<{ option: TPostData["filterOptions"] }>
+    ) {
+      if (!action.payload.option) return;
+
+      const { filterByPostName, filterByUserName, filterByFavorites } =
+        action.payload.option;
+
+      if (filterByPostName) {
+        state.postsData.filterOptions = {
+          ...state.postsData.filterOptions,
+          filterByPostName: filterByPostName,
+        };
+      } else if (filterByUserName) {
+        state.postsData.filterOptions = {
+          ...state.postsData.filterOptions,
+          filterByUserName: filterByUserName,
+        };
+      } else if (filterByFavorites) {
+        state.postsData.filterOptions = {
+          ...state.postsData.filterOptions,
+          filterByFavorites: filterByFavorites,
+        };
+      }
+    },
+    changeSortOption(
+      state,
+      action: PayloadAction<{ option: TPostData["sortOption"] }>
+    ) {
+      if (!action.payload.option) return;
+      state.postsData.sortOption = action.payload.option;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -157,6 +211,8 @@ export const {
   favoritePostHandler,
   deleteSelectedPosts,
   setFavoriteSelectedPosts,
+  changeFilterOption,
+  changeSortOption,
 } = postsSlice.actions;
 
 export const getAllPosts = ({ posts }: { posts: TPostsIntialState }) => {
@@ -176,4 +232,12 @@ export const getPostCommentsStatus = ({
   posts: TPostsIntialState;
 }) => {
   return posts.commentsStatus;
+};
+
+export const getFilterOptions = ({ posts }: { posts: TPostsIntialState }) => {
+  return posts.postsData.filterOptions;
+};
+
+export const getSortOption = ({ posts }: { posts: TPostsIntialState }) => {
+  return posts.postsData.sortOption;
 };

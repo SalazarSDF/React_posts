@@ -5,3 +5,8 @@
 .posts_list__header {
   margin: 2rem 0;
 }
+.posts_list__filter-sort {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
