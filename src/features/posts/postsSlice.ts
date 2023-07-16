@@ -16,6 +16,7 @@ export type TPost = {
   comments?: TComments[];
   selected?: boolean;
   favorite?: boolean;
+  userName?: string;
 };
 
 export type TPostData = {
@@ -25,7 +26,7 @@ export type TPostData = {
   limit: number;
   filterOptions?: {
     filterByPostName?: string;
-    filterByUserName?: number;
+    filterByUserName?: number | "all";
     filterByFavorites?: boolean;
   };
   sortOption?:
@@ -148,7 +149,7 @@ const postsSlice = createSlice({
       const { filterByPostName, filterByUserName, filterByFavorites } =
         action.payload.option;
 
-      if (filterByPostName) {
+      if (typeof filterByPostName === "string") {
         state.postsData.filterOptions = {
           ...state.postsData.filterOptions,
           filterByPostName: filterByPostName,
@@ -158,7 +159,7 @@ const postsSlice = createSlice({
           ...state.postsData.filterOptions,
           filterByUserName: filterByUserName,
         };
-      } else if (filterByFavorites) {
+      } else if (typeof filterByFavorites === "boolean") {
         state.postsData.filterOptions = {
           ...state.postsData.filterOptions,
           filterByFavorites: filterByFavorites,

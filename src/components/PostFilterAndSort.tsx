@@ -9,11 +9,9 @@ import {
 import { TPostData } from "../features/posts/postsSlice";
 
 const PostFiltersAndSort = () => {
-  const [postFilter, setPostFilter] = useState<string>(""); // fetch('https://dummyjson.com/posts/search?q=love')
-  const [userNameFilter, setUserNameFilter] = useState<string>(""); //  fetch('https://dummyjson.com/posts/user/5')
+  const [postFilter, setPostFilter] = useState<string>("");
   const [favoriteFilter, setFavoriteFilter] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  //
 
   const users = useSelector(getAllUsers);
 
@@ -24,12 +22,16 @@ const PostFiltersAndSort = () => {
     );
   };
 
-  //TODO:  add dispatch here
   const handleUserNameFilterChange = (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
-    setUserNameFilter(event.target.value);
-    console.log(event.target.value, "i need user ID here");
+    const userId =
+      event.target.value === "all" ? "all" : Number(event.target.value);
+    dispatch(
+      changeFilterOption({
+        option: { filterByUserName: userId },
+      })
+    );
   };
 
   const handleFavoriteFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +61,7 @@ const PostFiltersAndSort = () => {
       </div>
       <div>
         <label>Filter by User Name:</label>
-        <select value={userNameFilter} onChange={handleUserNameFilterChange}>
+        <select onChange={handleUserNameFilterChange}>
           <option value="all">All</option>
           {users.map((user) => (
             <option

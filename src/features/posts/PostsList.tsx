@@ -11,8 +11,9 @@ import { getAllPosts } from "./postsSlice";
 import Post from "./Post";
 import "./PostsList.css";
 import Pagination from "../../components/Pagination";
-import PostFiltersAndSort from "../../components/PostFilterAndSort";
+import PostsConfig from "../../components/PostsConfig";
 import filterAndSortPosts from "../../utils/filterAndSortPosts";
+import { getAllUsers } from "../users/usersSlice";
 
 function splitPosts(posts: TPost[], maxPages: number) {
   return posts.reduce((acc, val, i) => {
@@ -26,6 +27,7 @@ function splitPosts(posts: TPost[], maxPages: number) {
 export const PostsList = () => {
   const postsStatus = useSelector(getPostsStatus);
   const posts = useSelector(getAllPosts);
+  const users = useSelector(getAllUsers);
   const filterOptions = useSelector(getFilterOptions);
   const sortOption = useSelector(getSortOption);
   const [activePage, setActivePage] = useState<number>(1);
@@ -38,13 +40,22 @@ export const PostsList = () => {
     isFilterOrSort = true;
   }
   const filteredPosts = isFilterOrSort
-    ? filterAndSortPosts({ posts, filterOptions, sortOption })
+    ? filterAndSortPosts({ posts, users, filterOptions, sortOption })
     : posts;
   const getSplitedPosts = splitPosts(filteredPosts, maxPostsOnPage);
   let activePosts = getSplitedPosts[activePage - 1];
 
   if (getSplitedPosts.length === 0 && postsStatus !== "loading")
-    return <h1>No posts =(</h1>;
+    return (
+      <section className="posts_list">
+        <h2 className="posts_list__header">Posts</h2>
+        <PostsConfig
+          maxPostsOnPage={maxPostsOnPage}
+          handleOptionChange={handleOptionChange}
+        />
+        <h1>Нет Постов.. =(</h1>
+      </section>
+    );
 
   if (!activePosts && postsStatus !== "loading") {
     activePosts = getSplitedPosts[getSplitedPosts.length - 1];
@@ -59,26 +70,15 @@ export const PostsList = () => {
   return (
     <section className="posts_list">
       <h2 className="posts_list__header">Posts</h2>
+      <PostsConfig
+        maxPostsOnPage={maxPostsOnPage}
+        handleOptionChange={handleOptionChange}
+      />
+
       {postsStatus === "loading" ? (
         <Spinner></Spinner>
       ) : (
         <>
-          <div className="posts_list__filter-sort">
-            <div>
-              <label htmlFor="postLimit">количество выводимых постов: </label>
-              <select
-                id="postLimit"
-                onChange={(e) => handleOptionChange(e)}
-                value={maxPostsOnPage}
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
-            <PostFiltersAndSort />
-          </div>
           <Pagination
             maxPages={getSplitedPosts.length}
             activePage={activePage}
