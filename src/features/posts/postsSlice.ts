@@ -178,7 +178,7 @@ const postsSlice = createSlice({
       action: PayloadAction<{
         newPostBody: string;
         postId: number;
-        newPostUser: string;
+        newPostUserId: number;
         newPostTitle: string;
       }>
     ) {
@@ -187,7 +187,7 @@ const postsSlice = createSlice({
       );
       if (existingPost) {
         existingPost.body = action.payload.newPostBody;
-        existingPost.userName = action.payload.newPostUser;
+        existingPost.userId = action.payload.newPostUserId;
         existingPost.title = action.payload.newPostTitle;
       }
     },
@@ -207,6 +207,17 @@ const postsSlice = createSlice({
         reactions: 0,
       };
       state.postsData.posts.push(newPost);
+    },
+    deletePostById(
+      state,
+      action: PayloadAction<{
+        postId: number;
+      }>
+    ) {
+      const postIdToDelete = action.payload.postId;
+      state.postsData.posts = state.postsData.posts.filter(
+        (post) => post.id !== postIdToDelete
+      );
     },
   },
 
@@ -252,6 +263,7 @@ export const {
   changeSortOption,
   changePostBodyUserAndTitle,
   postAdded,
+  deletePostById,
 } = postsSlice.actions;
 
 export const getAllPosts = ({ posts }: { posts: TPostsIntialState }) => {

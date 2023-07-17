@@ -88,3 +88,13 @@ header {
 .default-button:hover {
   background-color: #0056b3;
 }
+
+.select-invalid {
+  border-color: red;
+}
+
+.error-message {
+  color: red;
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+}

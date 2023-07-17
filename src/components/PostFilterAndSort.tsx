@@ -52,8 +52,9 @@ const PostFiltersAndSort = () => {
   return (
     <div className="posts_list__filter-and-sort">
       <div>
-        <label>Фильтр по заголовку:</label>
+        <label htmlFor="title-input">Фильтр по заголовку:</label>
         <input
+          id="title-input"
           className="default-fields"
           type="text"
           value={postFilter}
@@ -61,8 +62,9 @@ const PostFiltersAndSort = () => {
         />
       </div>
       <div>
-        <label>Фильтр по имени юзера:</label>
+        <label htmlFor="username-select">Фильтр по имени юзера:</label>
         <select
+          id="username-select"
           className="default-fields default-fields_select"
           onChange={handleUserNameFilterChange}
         >
@@ -82,8 +84,9 @@ const PostFiltersAndSort = () => {
         </select>
       </div>
       <div className="posts_list__filter-and-sort_checkbox_container">
-        <label>Только избранные?</label>
+        <label htmlFor="favorite-checkbox">Только избранные?</label>
         <input
+          id="favorite-checkbox"
           className="posts_list__filter-and-sort_checkbox"
           type="checkbox"
           checked={favoriteFilter}
@@ -91,8 +94,9 @@ const PostFiltersAndSort = () => {
         />
       </div>
       <div>
-        <label>Сортировать по:</label>
+        <label htmlFor="sort-by-select">Сортировать по:</label>
         <select
+          id="sort-by-select"
           className="default-fields default-fields_select"
           onChange={handleSortChange}
         >

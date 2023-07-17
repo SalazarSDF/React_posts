@@ -8,27 +8,7 @@ import {
   setFavoriteSelectedPosts,
 } from "../features/posts/postsSlice";
 import { useAppDispatch } from "../store";
-
-const ActionButtonsModal = ({
-  onCancel,
-  onConfirm,
-}: {
-  onCancel: () => void;
-  onConfirm: () => void;
-}) => {
-  return ReactDOM.createPortal(
-    <div className="modal">
-      <div className="modal__content">
-        <p className="modal__text">
-          Вы уверены, что хотите выполнить действие?
-        </p>
-        <button onClick={onConfirm}>Да</button>
-        <button onClick={onCancel}>Отмена</button>
-      </div>
-    </div>,
-    document.body
-  );
-};
+import Modal from "./Modal";
 
 const ActionButtons = () => {
   const isSomeSelect = useSelector(checkOnSelect);
@@ -62,11 +42,11 @@ const ActionButtons = () => {
       <div>
         {isSomeSelect &&
           ReactDOM.createPortal(
-            <div className="portal-buttons">
-              <button className="action-button" onClick={handleDeleteClick}>
+            <div className="action-buttons">
+              <button className="default-button" onClick={handleDeleteClick}>
                 Удалить
               </button>
-              <button className="action-button" onClick={handleFavoriteClick}>
+              <button className="default-button" onClick={handleFavoriteClick}>
                 В избранное
               </button>
             </div>,
@@ -74,10 +54,7 @@ const ActionButtons = () => {
           )}
       </div>
       {showModal && (
-        <ActionButtonsModal
-          onCancel={handleCancelAction}
-          onConfirm={handleConfirmAction}
-        />
+        <Modal onCancel={handleCancelAction} onConfirm={handleConfirmAction} />
       )}
     </>
   );

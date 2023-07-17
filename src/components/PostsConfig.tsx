@@ -15,14 +15,23 @@ const PostsConfig = ({
         <div>
           <label htmlFor="postLimit">количество выводимых постов: </label>
           <select
+            className="default-fields default-fields_select"
             id="postLimit"
             onChange={(e) => handleOptionChange(e)}
             value={maxPostsOnPage}
           >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
+            <option className="default-fields_select_option" value={10}>
+              10
+            </option>
+            <option className="default-fields_select_option" value={20}>
+              20
+            </option>
+            <option className="default-fields_select_option" value={50}>
+              50
+            </option>
+            <option className="default-fields_select_option" value={100}>
+              100
+            </option>
           </select>
         </div>
 

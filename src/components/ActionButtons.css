@@ -1,38 +1,11 @@
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal__content {
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 4px;
-  text-align: center;
-}
-.modal__text {
-  color: black;
-}
-
-.action-button {
-  cursor: pointer;
-}
 
 /* Размещение кнопок в портале */
-.portal-buttons {
+.action-buttons {
   position: fixed;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: #982ab2;
   padding: 1rem;
   display: flex;
   gap: 1rem;
-  background: #0075ff;
 }

@@ -104,9 +104,8 @@ function filterAndSortPosts({
   sortOption: TPostData["sortOption"];
   users: TUser[];
 }): TPost[] {
-  let postsWithUsers = [...posts];
-  postsWithUsers = postsWithUsers.map((post) => {
-    const postUser = users.find((user) => user.id === post.id);
+  const postsWithUsers = posts.map((post) => {
+    const postUser = users.find((user) => user.id === post.userId);
     if (!postUser) return post;
     const postUserName = `${postUser.firstName} ${postUser.lastName}`;
     return post.userName ? post : { ...post, userName: postUserName };

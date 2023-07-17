@@ -51,6 +51,7 @@ const usersSlice = createSlice({
         if (action.payload) {
           state.usersData = action.payload;
         }
+
       });
   },
 });

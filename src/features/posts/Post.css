@@ -13,13 +13,13 @@
   grid-column: 2/3;
 }
 
-.post__inpit-title {
+.post__input-title {
   grid-column: 2/3;
 }
-.post__inpit-username {
+.post__input-username {
   grid-column: 2/3;
 }
-.post__inpit-textarea {
+.post__input-textarea {
   grid-column: 2/3;
 }
 
@@ -49,14 +49,15 @@
 .post__buttons {
   display: flex;
   align-items: center;
-  margin-top: 16px;
+  margin-top: 1rem;
   grid-column: 2/3;
+  flex-wrap: wrap;
+  gap: 1rem
 }
 
-.post__buttons button {
+.post__button{
   display: flex;
   align-items: center;
-  margin-right: 1rem;
   padding: 0.3px;
   background: none;
   border: none;
@@ -65,15 +66,12 @@
   color: white;
 }
 
-.post__buttons button span {
-  margin-right: 0.2rem;
-}
 
-.comment__button.active {
+.comment__button.active_comm {
   font-weight: bold;
 }
 
-.favorite__button.active {
+.favorite__button.active_fav {
   color: #ff9800;
 }
 
@@ -94,21 +92,6 @@
 
 .selected {
   background-color: rgb(137 216 166 / 33%);
-}
-
-.selected-buttons {
-  display: flex;
-  align-items: center;
-  margin-top: 16px;
-}
-
-.selected-buttons button {
-  margin-right: 16px;
-  padding: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
 }
 
 .comments__section {

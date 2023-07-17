@@ -1,7 +1,7 @@
 import { useState, useReducer } from "react";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../store";
-import { selectUserById } from "../users/usersSlice";
+import { selectUserById, getAllUsers } from "../users/usersSlice";
 import PostComments from "./PostComments";
 import "./Post.css";
 import {
@@ -10,18 +10,20 @@ import {
   favoritePostHandler,
   TPost,
   changePostBodyUserAndTitle,
+  deletePostById,
 } from "./postsSlice";
+import Modal from "../../components/Modal";
 
 type TPostState = {
   postBody?: string;
-  postUser?: string;
   postTitle?: string;
+  postUserId?: number;
 };
 
 enum TPostActionKind {
   "change_post_body" = "change_post_body",
   "change_post_title" = "change_post_title",
-  "change_post_user" = "change_post_user",
+  "change_post_user_id" = "change_post_user_id",
 }
 
 interface TPostAction {
@@ -43,10 +45,10 @@ function changePostValue(state: TPostState, action: TPostAction) {
         postTitle: action.payload.postTitle,
       };
     }
-    case "change_post_user": {
+    case "change_post_user_id": {
       return {
         ...state,
-        postUser: action.payload.postUser,
+        postUserId: action.payload.postUserId,
       };
     }
     default:
@@ -57,18 +59,19 @@ function changePostValue(state: TPostState, action: TPostAction) {
 const Post = ({ post }: { post: TPost }) => {
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showModalForDeletePost, setShowModalForDeletePost] = useState(false);
   const dispatch = useAppDispatch();
   const user = useSelector((state: RootState) =>
     selectUserById(state, post.userId)
   );
+  const users = useSelector(getAllUsers);
+
+  const [isSelectInvalid, setIsSelectInvalid] = useState(false);
 
   const [postValue, dispatchChangePostValue] = useReducer(changePostValue, {
     postBody: post.body,
-    postUser: post.userName
-      ? post.userName
-      : user
-      ? `${user.firstName} ${user.lastName}`
-      : "Неизвестный пользователь.",
+    postUserId: post.userId,
     postTitle: post.title,
   });
 
@@ -79,52 +82,56 @@ const Post = ({ post }: { post: TPost }) => {
     }
   };
 
+  const confirmChange = () => {
+    const { postBody, postUserId, postTitle } = postValue;
+    if (!postUserId) {
+      setIsSelectInvalid(true);
+      return;
+    }
+    dispatch(
+      changePostBodyUserAndTitle({
+        postId: post.id,
+        newPostBody: postBody ? postBody : "",
+        newPostUserId: postUserId,
+        newPostTitle: postTitle ? postTitle : "",
+      })
+    );
+    setShowModal(false);
+  };
+
+  const cancelChange = () => {
+    setShowModal(false);
+    dispatchChangePostValue({
+      type: TPostActionKind.change_post_title,
+      payload: { postTitle: post.title },
+    });
+
+    dispatchChangePostValue({
+      type: TPostActionKind.change_post_body,
+      payload: { postBody: post.body },
+    });
+
+    dispatchChangePostValue({
+      type: TPostActionKind.change_post_user_id,
+      payload: {
+        postUserId: post.userId,
+      },
+    });
+  };
+
   const handleToggleEditing = () => {
     setEditing(!editing);
     if (editing) {
-      const confirmed = window.confirm(
-        "Вы уверены, что хотите выполнить действие?"
-      );
-      if (confirmed) {
-        dispatch(
-          changePostBodyUserAndTitle({
-            postId: post.id,
-            newPostBody: postValue.postBody ? postValue.postBody : "",
-            newPostUser: postValue.postUser ? postValue.postUser : "",
-            newPostTitle: postValue.postTitle ? postValue.postTitle : "",
-          })
-        );
-      }
-      if (!confirmed) {
-        dispatchChangePostValue({
-          type: TPostActionKind.change_post_title,
-          payload: { postTitle: post.title },
-        });
-
-        dispatchChangePostValue({
-          type: TPostActionKind.change_post_body,
-          payload: { postBody: post.body },
-        });
-
-        dispatchChangePostValue({
-          type: TPostActionKind.change_post_user,
-          payload: {
-            postUser: user
-              ? `${user.firstName} ${user.lastName}`
-              : "Неизвестный пользователь.",
-          },
-        });
-      }
+      setShowModal(true);
     }
   };
 
-  const handleDelete = () => {
-    const confirmed = window.confirm(
-      "Вы уверены, что хотите удалить этот пост?"
-    );
-    if (confirmed) {
-      // Удалить пост
-    }
+  const onConfirmDeletePost = () => {
+    dispatch(deletePostById({ postId: post.id }));
+    setShowModalForDeletePost(false);
+  };
+  const onCancelDeletePost = () => {
+    setShowModalForDeletePost(false);
   };
 
   const handleToggleFavorite = () => {
@@ -139,6 +146,7 @@ const Post = ({ post }: { post: TPost }) => {
     event:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLSelectElement>
   ) => {
     if (!event || !event.target) return;
     const { name, value }: { name: string; value: string } = event.target;
@@ -160,9 +168,13 @@ const Post = ({ post }: { post: TPost }) => {
         break;
       }
       case "postUserName": {
+        if (value === "" || !postValue.postUserId) {
+          setIsSelectInvalid(true);
+          break;
+        }
         dispatchChangePostValue({
-          type: TPostActionKind.change_post_user,
-          payload: { postUser: value },
+          type: TPostActionKind.change_post_user_id,
+          payload: { postUserId: Number(value) },
         });
         break;
       }
@@ -175,28 +187,46 @@ const Post = ({ post }: { post: TPost }) => {
         post.favorite === true ? "favorite" : ""
       }`}
     >
-      <p>{post.id}</p>
+      <p>id: {post.id}</p>
       {editing ? (
-        <input
-          type="text"
-          name="postTitle"
-          value={postValue.postTitle}
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Enter a value"
-          className="post__inpit-title"
-        />
+        <div className="post__input-title">
+          <label>Заголовок: </label>
+          <input
+            type="text"
+            name="postTitle"
+            value={postValue.postTitle}
+            onChange={(e) => handleInputChange(e)}
+            placeholder="Title"
+            className="default-fields"
+          />
+        </div>
       ) : (
         <h1 className="post__title">{postValue.postTitle}</h1>
       )}
       {editing ? (
-        <input
-          type="text"
-          name="postUserName"
-          value={postValue.postUser}
-          onChange={handleInputChange}
-          placeholder="Enter a value"
-          className="post__inpit-username"
-        />
+        <div className="post__input-username">
+          <label>Имя пользователя: </label>
+          <select
+            name="postUserName"
+            placeholder="select user"
+            value={postValue.postUserId}
+            onChange={handleInputChange}
+            className={`default-fields default-fields_select ${
+              isSelectInvalid ? "select-invalid" : ""
+            }`}
+          >
+            <option className="default-fields_select_option" value="">
+              Select User
+            </option>
+            {users.map((user) => (
+              <option
+                className="default-fields_select_option"
+                key={user.id}
+                value={user.id}
+              >{`${user.firstName} ${user.lastName}`}</option>
+            ))}
+          </select>
+        </div>
       ) : (
         <div className="post__user">
           <img
@@ -204,24 +234,33 @@ const Post = ({ post }: { post: TPost }) => {
             src={user?.image}
             alt="user photo"
           />
-          <p className="post__user-name">{postValue.postUser}</p>
+          <p className="post__user-name">
+            {user
+              ? `${user.firstName} ${user.lastName}`
+              : "Неизвестный пользователь."}
+          </p>
         </div>
       )}
       {editing ? (
-        <textarea
-          name="postBody"
-          value={postValue.postBody}
-          onChange={handleInputChange}
-          placeholder="Enter a value"
-          className="post__inpit-textarea"
-        />
+        <div className="post__input-textarea">
+          <label>Текст поста: </label>
+          <textarea
+            name="postBody"
+            value={postValue.postBody}
+            onChange={handleInputChange}
+            placeholder="Post text"
+            className="default-fields"
+          />
+        </div>
       ) : (
         <p className="post__text">{postValue.postBody}</p>
       )}
 
       <div className="post__buttons">
         <button
-          className={`comment__button ${showComments ? "active" : ""}`}
+          className={`post__button comment__button ${
+            showComments ? "active_comm" : ""
+          }`}
           onClick={handleToggleComments}
         >
           <span role="img" aria-label="Комментарии">
@@ -229,21 +268,24 @@ const Post = ({ post }: { post: TPost }) => {
           </span>
           Комментарии
         </button>
-        <button onClick={handleToggleEditing}>
+        <button className="post__button" onClick={handleToggleEditing}>
           <span role="img" aria-label="Редактировать">
             🖊️
           </span>
           {editing ? "Сохранить" : "Редактировать"}
         </button>
-        <button onClick={handleDelete}>
+        <button
+          className="post__button"
+          onClick={() => setShowModalForDeletePost(true)}
+        >
           <span role="img" aria-label="Удалить">
             🗑️
           </span>
           Удалить
         </button>
         <button
-          className={`favorite__button ${
-            post.favorite === true ? "active" : ""
+          className={` post__button favorite__button ${
+            post.favorite === true ? "active_fav" : ""
           }`}
           onClick={handleToggleFavorite}
         >
@@ -266,6 +308,10 @@ const Post = ({ post }: { post: TPost }) => {
         <div className="comments__section">
           <PostComments post={post} />
         </div>
+      )}
+      {showModal && <Modal onConfirm={confirmChange} onCancel={cancelChange} />}
+      {showModalForDeletePost && (
+        <Modal onConfirm={onConfirmDeletePost} onCancel={onCancelDeletePost} />
       )}
     </div>
   );
