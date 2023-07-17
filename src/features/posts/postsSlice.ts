@@ -9,9 +9,9 @@ import {
 export type TPost = {
   userId: number;
   id: number;
-  title: "string";
-  body: "string";
-  tags: [];
+  title: string;
+  body: string;
+  tags: string[];
   reactions: number;
   comments?: TComments[];
   selected?: boolean;
@@ -173,10 +173,46 @@ const postsSlice = createSlice({
       if (!action.payload.option) return;
       state.postsData.sortOption = action.payload.option;
     },
+    changePostBodyUserAndTitle(
+      state,
+      action: PayloadAction<{
+        newPostBody: string;
+        postId: number;
+        newPostUser: string;
+        newPostTitle: string;
+      }>
+    ) {
+      const existingPost = state.postsData.posts.find(
+        (post) => post.id === action.payload.postId
+      );
+      if (existingPost) {
+        existingPost.body = action.payload.newPostBody;
+        existingPost.userName = action.payload.newPostUser;
+        existingPost.title = action.payload.newPostTitle;
+      }
+    },
+
+    postAdded(
+      state,
+      action: PayloadAction<{
+        title: string;
+        body: string;
+        userId: number;
+      }>
+    ) {
+      const newPost: TPost = {
+        ...action.payload,
+        id: Math.random() * state.postsData.posts.length + 100,
+        tags: [],
+        reactions: 0,
+      };
+      state.postsData.posts.push(newPost);
+    },
   },
+
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPosts.pending, (state, _) => {
+      .addCase(fetchPosts.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
@@ -185,10 +221,10 @@ const postsSlice = createSlice({
           state.postsData = action.payload;
         }
       })
-      .addCase(fetchPosts.rejected, (state, _) => {
+      .addCase(fetchPosts.rejected, (state) => {
         state.status = "failed";
       })
-      .addCase(fetchPostComments.pending, (state, _) => {
+      .addCase(fetchPostComments.pending, (state) => {
         state.commentsStatus = "loading";
       })
 
@@ -214,6 +250,8 @@ export const {
   setFavoriteSelectedPosts,
   changeFilterOption,
   changeSortOption,
+  changePostBodyUserAndTitle,
+  postAdded,
 } = postsSlice.actions;
 
 export const getAllPosts = ({ posts }: { posts: TPostsIntialState }) => {

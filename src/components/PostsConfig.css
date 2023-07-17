@@ -1,0 +1,11 @@
+.posts_list__config {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.posts_list__posts-limit {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

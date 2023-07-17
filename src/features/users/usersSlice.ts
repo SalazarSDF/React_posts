@@ -47,7 +47,6 @@ const usersSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
-        console.log(action, "action");
         state.status = "succeeded";
         if (action.payload) {
           state.usersData = action.payload;

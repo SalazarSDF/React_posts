@@ -7,6 +7,7 @@ import {
   changeSortOption,
 } from "../features/posts/postsSlice";
 import { TPostData } from "../features/posts/postsSlice";
+import "./PostFilterAndSort.css";
 
 const PostFiltersAndSort = () => {
   const [postFilter, setPostFilter] = useState<string>("");
@@ -45,55 +46,106 @@ const PostFiltersAndSort = () => {
 
   const handleSortChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const sortOption = event.target.value as TPostData["sortOption"];
-    console.log("Sorting by:", sortOption);
     dispatch(changeSortOption({ option: sortOption }));
   };
 
   return (
-    <div>
+    <div className="posts_list__filter-and-sort">
       <div>
-        <label>Filter by Post Name:</label>
+        <label>Фильтр по заголовку:</label>
         <input
+          className="default-fields"
           type="text"
           value={postFilter}
           onChange={handlePostNameFilterChange}
         />
       </div>
       <div>
-        <label>Filter by User Name:</label>
-        <select onChange={handleUserNameFilterChange}>
-          <option value="all">All</option>
+        <label>Фильтр по имени юзера:</label>
+        <select
+          className="default-fields default-fields_select"
+          onChange={handleUserNameFilterChange}
+        >
+          <option
+            className="default-fields default-fields_select_option"
+            value="all"
+          >
+            All
+          </option>
           {users.map((user) => (
             <option
+              className="default-fields default-fields_select_option"
               key={user.id}
               value={user.id}
             >{`${user.firstName} ${user.lastName}`}</option>
           ))}
         </select>
       </div>
-      <div>
-        <label>Filter by Favorites:</label>
+      <div className="posts_list__filter-and-sort_checkbox_container">
+        <label>Только избранные?</label>
         <input
+          className="posts_list__filter-and-sort_checkbox"
           type="checkbox"
           checked={favoriteFilter}
           onChange={handleFavoriteFilterChange}
         />
       </div>
       <div>
-        <label>Sort by:</label>
-        <select onChange={handleSortChange}>
-          <option value="idAsc">ID Ascending</option>
-          <option value="idDesc">ID Descending</option>
-          <option value="titleAsc">Title Ascending</option>
-          <option value="titleDesc">Title Descending</option>
-          <option value="userAsc">Username Ascending</option>
-          <option value="userDesc">Username Descending</option>
-          <option value="FavFirst">Favorites First</option>
-          <option value="FavLast">Favorites Last</option>
+        <label>Сортировать по:</label>
+        <select
+          className="default-fields default-fields_select"
+          onChange={handleSortChange}
+        >
+          <option
+            className="default-fields default-fields_select_option"
+            value="idAsc"
+          >
+            ID Ascending
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="idDesc"
+          >
+            ID Descending
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="titleAsc"
+          >
+            Title Ascending
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="titleDesc"
+          >
+            Title Descending
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="userAsc"
+          >
+            Username Ascending
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="userDesc"
+          >
+            Username Descending
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="FavFirst"
+          >
+            Favorites First
+          </option>
+          <option
+            className="default-fields default-fields_select_option"
+            value="FavLast"
+          >
+            Favorites Last
+          </option>
         </select>
       </div>
-      {/* Render the list of posts */}
-      {/* Implement logic to filter and sort the posts based on the selected filters */}
     </div>
   );
 };

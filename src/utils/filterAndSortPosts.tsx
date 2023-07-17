@@ -2,7 +2,6 @@ import { TPost } from "../features/posts/postsSlice";
 import { TPostData } from "../features/posts/postsSlice";
 import { TUser } from "../features/users/usersSlice";
 
-//TODO:  Sort by userAsc userDesc
 function sortPosts({
   posts,
   sortOption,
@@ -106,15 +105,12 @@ function filterAndSortPosts({
   users: TUser[];
 }): TPost[] {
   let postsWithUsers = [...posts];
-  if (postsWithUsers[0].userName === undefined) {
-    postsWithUsers = postsWithUsers.map((post) => {
-      const postUser = users.find((user) => user.id === post.id);
-      if (!postUser) return post;
-      const postUserName = `${postUser.firstName} ${postUser.lastName}`;
-
-      return { ...post, userName: postUserName };
-    });
-  }
+  postsWithUsers = postsWithUsers.map((post) => {
+    const postUser = users.find((user) => user.id === post.id);
+    if (!postUser) return post;
+    const postUserName = `${postUser.firstName} ${postUser.lastName}`;
+    return post.userName ? post : { ...post, userName: postUserName };
+  });
   const filteredPosts = filterPosts({ posts: postsWithUsers, filterOptions });
   const sortedPosts = sortPosts({ posts: filteredPosts, sortOption });
   return sortedPosts;

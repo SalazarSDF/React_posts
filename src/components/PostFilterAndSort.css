@@ -1,22 +1,19 @@
-.custom-button {
-  display: inline-flex;
+.posts_list__filter-and-sort {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+
+.posts_list__filter-and-sort_checkbox_container{
+  display: flex;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #3f51b5;
-  color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
+
+}
+
+.posts_list__filter-and-sort_checkbox {
+  min-width: 2rem;
+  min-height: 2rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.custom-button.reverse {
-  transform: rotate(180deg);
-}
-
-.custom-button:focus,
-.custom-button:hover {
-  background-color: #283593;
-  outline: none;
+  margin-left: 1rem;
 }

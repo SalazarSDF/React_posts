@@ -47,8 +47,6 @@ const PostComments = ({ post }: { post: TPost }) => {
       );
     });
   };
-  console.log(post.comments, 'post comments');
-  console.log(usersWitchLeaveComments, 'users withc leab comments');
   return isShowLoading ? (
     <Spinner />
   ) : (

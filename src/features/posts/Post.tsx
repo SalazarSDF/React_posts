@@ -1,12 +1,16 @@
 import { useState, useReducer } from "react";
-import { TPost } from "./postsSlice";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../store";
 import { selectUserById } from "../users/usersSlice";
-import { fetchPostComments } from "./postsSlice";
 import PostComments from "./PostComments";
 import "./Post.css";
-import { selectPostHandler, favoritePostHandler } from "./postsSlice";
+import {
+  fetchPostComments,
+  selectPostHandler,
+  favoritePostHandler,
+  TPost,
+  changePostBodyUserAndTitle,
+} from "./postsSlice";
 
 type TPostState = {
   postBody?: string;
@@ -60,7 +64,11 @@ const Post = ({ post }: { post: TPost }) => {
 
   const [postValue, dispatchChangePostValue] = useReducer(changePostValue, {
     postBody: post.body,
-    postUser: user ? `${user.firstName} ${user.lastName}` : "secret ninja",
+    postUser: post.userName
+      ? post.userName
+      : user
+      ? `${user.firstName} ${user.lastName}`
+      : "Неизвестный пользователь.",
     postTitle: post.title,
   });
 
@@ -73,10 +81,44 @@ const Post = ({ post }: { post: TPost }) => {
 
   const handleToggleEditing = () => {
     setEditing(!editing);
+    if (editing) {
+      const confirmed = window.confirm(
+        "Вы уверены, что хотите выполнить действие?"
+      );
+      if (confirmed) {
+        dispatch(
+          changePostBodyUserAndTitle({
+            postId: post.id,
+            newPostBody: postValue.postBody ? postValue.postBody : "",
+            newPostUser: postValue.postUser ? postValue.postUser : "",
+            newPostTitle: postValue.postTitle ? postValue.postTitle : "",
+          })
+        );
+      }
+      if (!confirmed) {
+        dispatchChangePostValue({
+          type: TPostActionKind.change_post_title,
+          payload: { postTitle: post.title },
+        });
+
+        dispatchChangePostValue({
+          type: TPostActionKind.change_post_body,
+          payload: { postBody: post.body },
+        });
+
+        dispatchChangePostValue({
+          type: TPostActionKind.change_post_user,
+          payload: {
+            postUser: user
+              ? `${user.firstName} ${user.lastName}`
+              : "Неизвестный пользователь.",
+          },
+        });
+      }
+    }
   };
 
   const handleDelete = () => {
-    // Показать всплывающее окно с подтверждением удаления
     const confirmed = window.confirm(
       "Вы уверены, что хотите удалить этот пост?"
     );
@@ -101,7 +143,6 @@ const Post = ({ post }: { post: TPost }) => {
     if (!event || !event.target) return;
     const { name, value }: { name: string; value: string } = event.target;
 
-    // Обновить соответствующее состояние
     switch (name) {
       case "postTitle": {
         dispatchChangePostValue({
