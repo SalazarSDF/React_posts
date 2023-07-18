@@ -5,3 +5,10 @@
 .posts_list__header {
   margin: 2rem 0;
 }
+
+@media only screen and (max-width: 40em) {
+  .posts_list {
+    font-size: 70%;
+    margin: 0 1rem;
+  }
+}
