@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useState, useReducer, memo } from "react";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../store";
 import { selectUserById, getAllUsers } from "../users/usersSlice";
@@ -56,7 +56,7 @@ function changePostValue(state: TPostState, action: TPostAction) {
   }
 }
 
-const Post = ({ post }: { post: TPost }) => {
+const Post = memo(({ post }: { post: TPost }) => {
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -315,6 +315,6 @@ const Post = ({ post }: { post: TPost }) => {
       )}
     </div>
   );
-};
+});
 
 export default Post;
