@@ -1,5 +1,4 @@
-# React_posts link
-- https://wondrous-lebkuchen-411d41.netlify.app
+# DEMO: https://wondrous-lebkuchen-411d41.netlify.app
 ## Работа с данными, полученными из API
 ### Задача: разработать приложение, выводящее посты из API с возможностью взаимодействия с ними.
 ### Требования:
